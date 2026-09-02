@@ -1,7 +1,9 @@
-# Kindly Tech
+# CanHue
 
 An early product prototype for an on-demand remote technology assistance service
 focused on older adults and their families.
+
+The name is inspired by the familiar request, “Can you do this for me?”
 
 ## Prototype scope
 

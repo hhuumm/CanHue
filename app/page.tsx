@@ -71,7 +71,7 @@ export default function HomePage() {
             </div>
             <div>
               <p className="font-heading text-lg font-bold tracking-[-0.03em]">
-                Kindly Tech
+                CanHue
               </p>
               <p className="text-[11px] font-medium text-muted-foreground">
                 Help is just a call away.

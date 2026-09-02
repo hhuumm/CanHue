@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Kindly Tech | Trusted family tech support',
+  title: 'CanHue | Trusted family tech support',
   description:
     'Patient, trusted remote technology help for older adults and their families.',
 };
