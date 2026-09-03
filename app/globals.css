@@ -99,4 +99,7 @@
   .page-title {
     @apply mt-2 text-3xl font-bold tracking-[-.045em] sm:text-4xl;
   }
+  .form-control {
+    @apply h-11 w-full rounded-xl border border-input bg-white px-3 text-sm outline-none transition focus:border-ring focus:ring-3 focus:ring-ring/20;
+  }
 }

@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import {
   ArrowRight,
   CalendarDays,
   Check,
+  CheckCircle2,
   ChevronDown,
   Clock3,
   Headphones,
@@ -24,6 +25,14 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 
 type Role = 'customer' | 'technician' | 'admin';
 const roleCopy: Record<
@@ -60,6 +69,7 @@ const nav = {
 
 export default function HomePage() {
   const [role, setRole] = useState<Role>('customer');
+  const [helpOpen, setHelpOpen] = useState(false);
   const identity = roleCopy[role];
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -138,16 +148,34 @@ export default function HomePage() {
           </div>
         </aside>
         <section className="min-w-0 px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
-          {role === 'customer' && <CustomerDashboard />}
+          <div className="mb-6 md:hidden">
+            <label htmlFor="mobile-role" className="eyebrow mb-2 block">
+              Preview dashboard
+            </label>
+            <select
+              id="mobile-role"
+              value={role}
+              onChange={(event) => setRole(event.target.value as Role)}
+              className="h-11 w-full rounded-xl border bg-white px-3 text-sm font-semibold"
+            >
+              <option value="customer">Family</option>
+              <option value="technician">Technician</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          {role === 'customer' && (
+            <CustomerDashboard onRequestHelp={() => setHelpOpen(true)} />
+          )}
           {role === 'technician' && <TechnicianDashboard />}
           {role === 'admin' && <AdminDashboard />}
         </section>
       </div>
+      <HelpRequestDialog open={helpOpen} onOpenChange={setHelpOpen} />
     </main>
   );
 }
 
-function CustomerDashboard() {
+function CustomerDashboard({ onRequestHelp }: { onRequestHelp: () => void }) {
   return (
     <div className="mx-auto max-w-6xl">
       <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
@@ -159,6 +187,7 @@ function CustomerDashboard() {
           </p>
         </div>
         <Button
+          onClick={onRequestHelp}
           size="lg"
           className="h-12 rounded-xl px-5 text-base shadow-[0_8px_20px_rgba(21,102,82,.18)]"
         >
@@ -180,7 +209,10 @@ function CustomerDashboard() {
                 </p>
               </div>
               <div className="mt-7 flex flex-wrap items-center gap-3">
-                <Button className="h-11 bg-white px-4 text-primary hover:bg-white/90">
+                <Button
+                  onClick={onRequestHelp}
+                  className="h-11 bg-white px-4 text-primary hover:bg-white/90"
+                >
                   Request help <ArrowRight />
                 </Button>
                 <span className="text-xs font-semibold text-white/70">
@@ -432,6 +464,172 @@ function AdminDashboard() {
           </table>
         </div>
       </article>
+    </div>
+  );
+}
+
+function HelpRequestDialog({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const [submitted, setSubmitted] = useState(false);
+
+  function handleOpenChange(nextOpen: boolean) {
+    onOpenChange(nextOpen);
+    if (!nextOpen) setSubmitted(false);
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto rounded-3xl p-0 sm:max-w-xl">
+        {submitted ? (
+          <div className="p-8 text-center sm:p-10">
+            <div className="mx-auto grid size-14 place-items-center rounded-full bg-[#e6f4ef] text-primary">
+              <CheckCircle2 className="size-7" />
+            </div>
+            <DialogHeader className="mt-5 items-center">
+              <DialogTitle className="text-2xl font-bold">
+                Your request is ready
+              </DialogTitle>
+              <DialogDescription className="max-w-sm leading-6">
+                This prototype saved the request locally for preview. No charge
+                was made and no technician was contacted.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="mt-6 rounded-2xl bg-muted p-4 text-left text-sm">
+              <p className="font-semibold">Help for Eleanor</p>
+              <p className="mt-1 text-muted-foreground">
+                Tomorrow morning · Family Plan session
+              </p>
+            </div>
+            <Button
+              className="mt-6 h-11 w-full"
+              onClick={() => handleOpenChange(false)}
+            >
+              Return to dashboard
+            </Button>
+          </div>
+        ) : (
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              setSubmitted(true);
+            }}
+          >
+            <div className="border-b px-6 py-6 sm:px-8">
+              <DialogHeader>
+                <p className="eyebrow">Request support</p>
+                <DialogTitle className="text-2xl font-bold">
+                  Tell us how we can help
+                </DialogTitle>
+                <DialogDescription className="leading-6">
+                  A few details help us match you with the right patient,
+                  trusted technician.
+                </DialogDescription>
+              </DialogHeader>
+            </div>
+            <div className="space-y-5 px-6 py-6 sm:px-8">
+              <Field label="Who needs help?" htmlFor="recipient">
+                <select
+                  id="recipient"
+                  name="recipient"
+                  className="form-control"
+                  defaultValue="eleanor"
+                >
+                  <option value="eleanor">Eleanor Morgan (Mom)</option>
+                  <option value="alex">Alex Morgan (Me)</option>
+                </select>
+              </Field>
+              <Field label="What do you need help with?" htmlFor="issue-type">
+                <select
+                  id="issue-type"
+                  name="issueType"
+                  className="form-control"
+                  defaultValue="printer"
+                >
+                  <option value="printer">Printer or scanner</option>
+                  <option value="email">Email or password</option>
+                  <option value="wifi">Wi-Fi or internet</option>
+                  <option value="device">New device setup</option>
+                  <option value="safety">
+                    Suspicious message or scam check
+                  </option>
+                  <option value="other">Something else</option>
+                </select>
+              </Field>
+              <Field label="Describe what’s happening" htmlFor="details">
+                <Textarea
+                  id="details"
+                  name="details"
+                  required
+                  className="min-h-24 rounded-xl"
+                  placeholder="For example: The printer says it is offline and nothing will print."
+                />
+              </Field>
+              <Field label="When would you like help?" htmlFor="timing">
+                <select
+                  id="timing"
+                  name="timing"
+                  className="form-control"
+                  defaultValue="tomorrow"
+                >
+                  <option value="soon">As soon as possible</option>
+                  <option value="today">Later today</option>
+                  <option value="tomorrow">Tomorrow morning</option>
+                  <option value="schedule">Choose another time</option>
+                </select>
+              </Field>
+              <div className="flex gap-3 rounded-2xl border bg-[#f8fbf9] p-4 text-sm leading-5">
+                <input
+                  id="recipient-consent"
+                  type="checkbox"
+                  required
+                  className="mt-0.5 size-4 accent-[#176451]"
+                />
+                <label htmlFor="recipient-consent">
+                  <span className="block font-semibold">
+                    Eleanor will approve access herself
+                  </span>
+                  <span className="mt-1 block text-xs leading-5 text-muted-foreground">
+                    The technician cannot view or control her computer until she
+                    gives permission at the start of the session.
+                  </span>
+                </label>
+              </div>
+            </div>
+            <div className="flex flex-col-reverse gap-3 rounded-b-3xl border-t bg-muted/45 px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+              <p className="text-xs text-muted-foreground">
+                Uses your included monthly session
+              </p>
+              <Button type="submit" className="h-11 px-5">
+                Review request <ArrowRight />
+              </Button>
+            </div>
+          </form>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function Field({
+  label,
+  htmlFor,
+  children,
+}: {
+  label: string;
+  htmlFor: string;
+  children: ReactNode;
+}) {
+  return (
+    <div>
+      <label htmlFor={htmlFor} className="mb-2 block text-sm font-semibold">
+        {label}
+      </label>
+      {children}
     </div>
   );
 }
