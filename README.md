@@ -27,6 +27,16 @@ The initial offer is intentionally simple:
 
 ## What the POC demonstrates
 
+The demo is a complete clickable walkthrough rather than a single dashboard.
+Every sidebar item opens a representative product screen with realistic mock
+records, status states, safeguards, and calls to action.
+
+| Experience | Included screens |
+| --- | --- |
+| Family | Overview, guided help request, sessions, family permissions, plan and billing |
+| Technician | Overview, available requests, session schedule, earnings, verified profile |
+| Administrator | Operations overview, request queue, technician roster, households, revenue operations |
+
 ### Family experience
 
 - Request help for yourself or a family member
@@ -83,6 +93,9 @@ details, or private information.
 This is an interface and workflow POC. It uses mock data and does **not** yet
 provide real authentication, payments, technician payouts, persistent storage,
 notifications, or remote computer control.
+
+The current build includes responsive navigation and a shared, mobile-friendly
+table system for the operational views.
 
 The next product phase is a local, role-aware application model followed by a
 security evaluation of an attended remote-control engine such as MeshCentral or
